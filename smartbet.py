@@ -51,16 +51,8 @@ def toto(events):
             events[id]['markets'] = {market_label: {}}
 
             for outcome in market['outcomes']:
-                outcome_label = outcome['subType']
-
-                if outcome_label == 'H':
-                    outcome_label = '1'
-                if outcome_label == 'D':
-                    outcome_label = 'X'
-                if outcome_label == 'A':
-                    outcome_label = '2'
-
-                events[id]['markets'][market_label][outcome_label] = {
+                outcome_name = normalize(outcome['name'])
+                events[id]['markets'][market_label][outcome_name] = {
                     'odds' : outcome['prices'][0]['decimal'],
                     'bookmaker' : 'Toto'
                 }
