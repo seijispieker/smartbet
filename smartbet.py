@@ -1,5 +1,5 @@
 import json
-import os
+from pathlib import Path
 
 from betcity import betcity
 from toto import toto
@@ -7,15 +7,14 @@ from toto import toto
 
 def main():
     events = {}
+    output = Path('output')
 
-    if not os.path.exists('output'):
-        os.mkdir('output')
+    if not output.exists():
+        output.mkdir()
 
     toto(events)
     betcity(events)
-
-    with open('output/smartbet.json', 'w') as f:
-        json.dump(events, f)
+    (output / Path('smartbet.json')).write_text(json.dumps(events))
 
 
 if __name__ == '__main__':
