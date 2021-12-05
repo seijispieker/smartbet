@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from arbitrage import arbitrage
 from betcity import betcity
 from toto import toto
 
@@ -14,6 +15,7 @@ def main():
 
     toto(events)
     betcity(events)
+    events = arbitrage(events)
     (output / Path('smartbet.json')).write_text(json.dumps(events))
 
 
