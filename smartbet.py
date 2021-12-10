@@ -3,6 +3,7 @@ from pathlib import Path
 
 from arbitrage import arbitrage
 from betcity import betcity
+from bingoal import bingoal
 from toto import toto
 
 
@@ -13,8 +14,9 @@ def main():
     if not output.exists():
         output.mkdir()
 
-    toto(events)
-    betcity(events)
+    # toto(events)
+    # betcity(events)
+    bingoal(events)
     events = arbitrage(events)
     (output / Path('smartbet.json')).write_text(json.dumps(events))
 
