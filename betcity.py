@@ -1,4 +1,6 @@
 import concurrent.futures
+import json
+from pathlib import Path
 
 from util import get_request, normalize
 
@@ -24,7 +26,7 @@ def get_outcome_name(outcome, home, away):
         return 'draw'
 
 
-def betcity(events):
+def betcity(events, localization):
     print('Downloading events from betcity...')
 
     url = 'https://eu-offering.kambicdn.org/offering/v2018/betcitynl/group.json'
@@ -35,6 +37,7 @@ def betcity(events):
     response = get_request(url, params=params)
     groups = response.json()['group']['groups']
     betcity_events = []
+    localize = {}
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         results = executor.map(download_group, groups)
@@ -42,8 +45,7 @@ def betcity(events):
         for result in results:
             betcity_events += result
 
-    id_match = 0
-    total = 0
+    match = 0
 
     for event in betcity_events:
         event_ = event['event']
@@ -59,8 +61,6 @@ def betcity(events):
         id = f'{home} v {away} - {time}'
 
         if id in events:
-            id_match += 1
-
             for outcome in event['betOffers'][0]['outcomes']:
                 if outcome['status'] == 'SUSPENDED':
                     continue
@@ -73,11 +73,15 @@ def betcity(events):
                         'odds': betcity_odds,
                         'bookmaker': 'Betcity'
                     }
+
+            match += 1
         else:
             events[id] = {}
             events[id]['sport'] = normalize(
                 event_['path'][0]['englishName'])
             events[id]['markets'] = {'MR': {}}
+            localize[home] = id
+            localize[away] = id
 
             if len(event_['path']) == 2:
                 events[id]['region'] = ''
@@ -99,7 +103,8 @@ def betcity(events):
                     'bookmaker': 'Betcity'
                 }
 
-        total += 1
-
+    Path('output/localize_betcity.json').write_text(json.dumps(localize,
+                                                               indent=4))
+    total = len(betcity_events)
     print(
-        f'Downloaded {total} events from betcity with {id_match} id\'s matched.')
+        f'Downloaded {total} events from betcity with {match} id\'s matched.')

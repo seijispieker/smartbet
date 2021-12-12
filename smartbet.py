@@ -13,8 +13,10 @@ def main():
     if not output.exists():
         output.mkdir()
 
+    data = Path('localization/localization.json').read_text()
+    localization = json.loads(data)
     toto(events)
-    betcity(events)
+    betcity(events, localization)
     events = arbitrage(events)
     (output / Path('smartbet.json')).write_text(json.dumps(events))
 
