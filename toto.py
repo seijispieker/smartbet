@@ -30,7 +30,7 @@ def toto(events):
         for event in time_band_event['events']:
             home = normalize(event['teams'][0]['name'])
             away = normalize(event['teams'][1]['name'])
-            time = event['startTime']
+            time = event['startTime'][:-1]
             id = f'{home} v {away} - {time}'
             events[id] = {}
             events[id]['home'] = home
