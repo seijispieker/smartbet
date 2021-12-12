@@ -14,8 +14,8 @@ def main():
         output.mkdir()
 
     toto(events)
-    betcity(events)
     (output / Path('events.json')).write_text(json.dumps(events, indent=4))
+    betcity(events)
     events = arbitrage(events)
     (output / Path('smartbet.json')).write_text(json.dumps(events))
 
