@@ -1,6 +1,15 @@
 from util import get_request, normalize
 
 
+def get_outcome_name(type, home, away):
+    if type == 'H':
+        return home
+    if type == 'A':
+        return away
+    if type == 'D':
+        return 'draw'
+
+
 def toto(events):
     print('Downloading events from toto...')
 
@@ -34,7 +43,7 @@ def toto(events):
             events[id]['markets'] = {market_label: {}}
 
             for outcome in market['outcomes']:
-                outcome_name = normalize(outcome['name'])
+                outcome_name = get_outcome_name(outcome['subType'], home, away)
                 events[id]['markets'][market_label][outcome_name] = {
                     'odds': outcome['prices'][0]['decimal'],
                     'bookmaker': 'Toto'
