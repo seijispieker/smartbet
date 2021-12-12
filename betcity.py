@@ -75,6 +75,8 @@ def betcity(events):
                     }
         else:
             events[id] = {}
+            events[id]['home'] = home
+            events[id]['away'] = away
             events[id]['sport'] = normalize(
                 event_['path'][0]['englishName'])
             events[id]['markets'] = {'MR': {}}
