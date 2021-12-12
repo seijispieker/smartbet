@@ -15,9 +15,14 @@ def download_group(group):
     return response.json()['events']
 
 
-def get_outcome_name(outcome, home, away):
+def get_outcome_name(outcome, home, away, localization):
     if 'participant' in outcome:
-        return normalize(outcome['participant'])
+        name = normalize(outcome['participant'])
+
+        if name in localization:
+            name = localization[name]
+
+        return name
     if outcome['label'] == '1':
         return home
     if outcome['label'] == '2':
@@ -26,7 +31,7 @@ def get_outcome_name(outcome, home, away):
         return 'draw'
 
 
-def betcity(events, localization):
+def betcity(events):
     print('Downloading events from betcity...')
 
     url = 'https://eu-offering.kambicdn.org/offering/v2018/betcitynl/group.json'
@@ -38,6 +43,9 @@ def betcity(events, localization):
     groups = response.json()['group']['groups']
     betcity_events = []
     localize = {}
+
+    data = Path('localization/betcity_localization.json').read_text()
+    localization = json.loads(data)
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         results = executor.map(download_group, groups)
@@ -57,6 +65,12 @@ def betcity(events, localization):
 
         home = normalize(event_['homeName'])
         away = normalize(event_['awayName'])
+
+        if home in localization:
+            home = localization[home]
+        if away in localization:
+            away = localization[away]
+
         time = event_['start']
         id = f'{home} v {away} - {time}'
 
@@ -65,7 +79,8 @@ def betcity(events, localization):
                 if outcome['status'] == 'SUSPENDED':
                     continue
 
-                outcome_name = get_outcome_name(outcome, home, away)
+                outcome_name = get_outcome_name(outcome, home, away,
+                                                localization)
                 betcity_odds = outcome['odds'] / 1000
 
                 if events[id]['markets']['MR'][outcome_name]['odds'] < betcity_odds:
@@ -97,7 +112,8 @@ def betcity(events, localization):
                 if outcome['status'] == 'SUSPENDED':
                     continue
 
-                outcome_name = get_outcome_name(outcome, home, away)
+                outcome_name = get_outcome_name(outcome, home, away,
+                                                localization)
                 events[id]['markets']['MR'][outcome_name] = {
                     'odds': outcome['odds'] / 1000,
                     'bookmaker': 'Betcity'
