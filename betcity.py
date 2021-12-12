@@ -1,6 +1,6 @@
 import concurrent.futures
 
-from util import get_request, normalize
+from util import get_request, normalize, round_five_min
 
 
 def download_group(group):
@@ -55,7 +55,7 @@ def betcity(events):
 
         home = normalize(event_['homeName'])
         away = normalize(event_['awayName'])
-        time = event_['start']
+        time = round_five_min(event_['start'][:-1])
         id = f'{home} v {away} - {time}'
 
         if id in events:
