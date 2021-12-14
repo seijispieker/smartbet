@@ -35,6 +35,7 @@ def toto(events):
             events[id] = {}
             events[id]['home'] = home
             events[id]['away'] = away
+            events[id]['time'] = time
             events[id]['sport'] = normalize(event['category']['name'])
             events[id]['region'] = normalize(event['class']['name'])
             events[id]['division'] = normalize(event['type']['name'])
